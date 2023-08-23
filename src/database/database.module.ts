@@ -16,7 +16,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       username: this.config.getOrThrow('MYSQL_USERNAME'),
       password: this.config.getOrThrow('MYSQL_PASSWORD'),
       autoLoadEntities: true,
-      synchronize: this.config.getOrThrow('SYNCRONIZE'),
+      synchronize: false,
       entities: this.config.getOrThrow('ENTITY_DIR'),
     };
   }

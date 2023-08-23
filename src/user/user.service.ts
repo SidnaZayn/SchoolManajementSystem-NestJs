@@ -2,7 +2,7 @@ import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entity/users.entity';
-import { DataSource, QueryRunner, Repository, Like } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { LoginDto } from './dto/login.dto';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
@@ -14,6 +14,7 @@ import { UserDto } from './dto/user.dto';
 export class UserService {
   constructor(
     @InjectRepository(Users)
+    private readonly userRepository: Repository<Users>,
     private dataSource: DataSource,
   ) {}
 
@@ -55,7 +56,7 @@ export class UserService {
     const newUser = {
       password: hash,
       name: rest.name,
-      role: rest.roleId,
+      roleId: rest.roleId,
       email: rest.email,
     };
     return this.dataSource
@@ -76,7 +77,7 @@ export class UserService {
   }
 
   async allUsers(payload: UserDto) {
-    const queryBuilder = this.dataSource.getRepository(Users);
+    const queryBuilder = this.userRepository;
     let filter: Object = {};
 
     if (payload.name) {

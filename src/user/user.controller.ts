@@ -14,7 +14,7 @@ import { UserService } from './user.service';
 import { LoginDto } from './dto/login.dto';
 import { Users } from 'src/entity/users.entity';
 import { SignupDto } from './dto/signup.dto';
-import { UserGuard } from './user.guard';
+import { AuthGuard } from 'src/guard/auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -33,13 +33,13 @@ export class UserController {
   }
 
   @Delete('delete/:userId')
-  @UseGuards(UserGuard)
+  @UseGuards(AuthGuard)
   async delete(@Param('userId') userId: number): Promise<any> {
     return this.userService.delete(userId);
   }
 
   @Get('')
-  @UseGuards(UserGuard)
+  @UseGuards(AuthGuard)
   async user(@Query() payload: SignupDto): Promise<any> {
     return this.userService.allUsers(payload);
   }
