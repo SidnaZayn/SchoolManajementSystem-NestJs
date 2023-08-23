@@ -7,6 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './database/database.module';
 import { AuthMiddleware } from './user/user.middleware';
 import { StudentModule } from './student/student.module';
+import { MajorModule } from './major/major.module';
+import { SubjectModule } from './subject/subject.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { StudentModule } from './student/student.module';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     UserModule,
     StudentModule,
+    MajorModule,
+    SubjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],
