@@ -2,18 +2,18 @@ import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entity/users.entity';
-import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository, Like } from 'typeorm';
 import { LoginDto } from './dto/login.dto';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { SignupDto } from './dto/signup.dto';
 import * as bcrypt from 'bcrypt';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(Users)
-    private readonly userRepository: Repository<Users>,
     private dataSource: DataSource,
   ) {}
 
@@ -36,7 +36,9 @@ export class UserService {
     }
 
     return {
-      accessToken: sign(user),
+      accessToken: sign({ user }, this.config.get<string>('JWT_SECRET'), {
+        expiresIn: 604800000,
+      }),
       tokenType: 'Bearer',
       user: {
         id: user.id,
@@ -71,5 +73,30 @@ export class UserService {
       .delete()
       .where('id = :id', { id: id })
       .execute();
+  }
+
+  async allUsers(payload: UserDto) {
+    const queryBuilder = this.dataSource.getRepository(Users);
+    let filter: Object = {};
+
+    if (payload.name) {
+      filter['name'] = Like(`%${payload.name}%`);
+    }
+    if (payload.roleId) {
+      filter['roleId'] = { id: payload.roleId };
+    }
+
+    const data = await queryBuilder.find({
+      where: filter,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+      relations: {
+        roleId: true,
+      },
+    });
+    return data;
   }
 }

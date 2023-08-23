@@ -22,8 +22,6 @@ export class Roles {
   @Column()
   name: string;
 
-  @OneToMany(() => Users, (user) => user.role, {
-    cascade: ['insert', 'update'],
-  })
+  @OneToMany(() => Users, (user) => user.roleId)
   user: Users[];
 }
